@@ -4,7 +4,7 @@ Example code on how to access a https site that requires client certs, made for 
 
 ## Overview
 
-There are (at least) two ways to accomplish this. Using "raw" `System.Net.WebRequest", that lacks a lot of conviences methods or using `System.Net.WebClient", that has more conveniances. 
+There are (at least) two ways to accomplish this. Using "raw" `System.Net.WebRequest`, that lacks a lot of conviences methods or using `System.Net.WebClient`, that has more conveniances. 
 
 This example focuses on a RESTlike API. Usually, we would be using RestSharp, but it's documentation doesn't explain how to add client certs, although it probably can be done. (I will update this if I figure it out). 
 
