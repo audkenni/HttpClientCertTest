@@ -29,6 +29,7 @@ namespace HttpClientCertTest
             request.Method = WebRequestMethods.Http.Get;
             request.ContentType = "application/x-www-form-urlencoded";
             request.Accept = "application/json";
+            request.ClientCertificates.Add(cert);
 
             using (StreamReader sr = new StreamReader(request.GetResponse().GetResponseStream()))
             {
@@ -47,7 +48,7 @@ namespace HttpClientCertTest
         static public JObject GetKortaumsoknWebClient(int id)
         {
             var uri = String.Format("umsokn/{0}", id);
-            using (WebClient client = new WebClient())
+            using (ClientCertWebClient client = new ClientCertWebClient())
             {
                 client.Headers.Add("User-Agent", "Demo");
                 try
@@ -75,10 +76,10 @@ namespace HttpClientCertTest
             // Justing printing an arbitary property to do something...
             try
             {
-                Console.Write("WebRequest: ");
-                Console.WriteLine(GetKortaumsoknWebRequest(1)["Greidslumati"]);
                 Console.Write("WebClient: ");
-                Console.WriteLine(GetKortaumsoknWebClient(1)["Greidslumati"]);
+                Console.WriteLine(GetKortaumsoknWebClient(1)["UmNafn"]);
+                Console.Write("WebRequest: ");
+                Console.WriteLine(GetKortaumsoknWebRequest(1)["UmNafn"]);
             }
             catch (InvalidOperationException ex)
             {
