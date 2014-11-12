@@ -51,6 +51,8 @@ namespace HttpClientCertTest
             using (ClientCertWebClient client = new ClientCertWebClient())
             {
                 client.Headers.Add("User-Agent", "Demo");
+                client.Headers.Add("Accept", "application/json");
+                client.Headers.Add("Content-Type", "application/json");
                 try
                 {
                     var jsonstring = client.DownloadString(API + uri);
