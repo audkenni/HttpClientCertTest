@@ -73,6 +73,42 @@ namespace HttpClientCertTest
             }
         }
 
+        static public JObject PostKortaumsoknWebClient(string content)
+        {
+            var uri = String.Format("umsokn");
+            using (ClientCertWebClient client = new ClientCertWebClient())
+            {
+                client.Headers.Add("User-Agent", "Demo");
+                client.Headers.Add("Accept", "application/json");
+                client.Headers.Add("Content-Type", "application/json");
+                try
+                {
+                    ASCIIEncoding encoding = new ASCIIEncoding();
+                    byte[] bytecontent = encoding.GetBytes(content);
+                    var byteresponse = client.UploadData(API + uri, "POST", bytecontent);
+                    var charresponse = encoding.GetChars(byteresponse);
+                    string stringresponse = "";
+                    foreach (char ch in charresponse)
+                    {
+                        stringresponse += ch;
+                    }
+                    return JsonConvert.DeserializeObject<JObject>(stringresponse);
+                }
+                catch (WebException ex)
+                {
+                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        // http error from auðkenni api
+                        int statuscode = (int)((HttpWebResponse)ex.Response).StatusCode;
+                        throw new InvalidOperationException(String.Format("{0}", statuscode));
+                    }
+                    // lots of other possible WebExceptionStatus.
+                    // choose what you want to handle: http://msdn.microsoft.com/en-us/library/system.net.webexceptionstatus(v=vs.110).aspx
+                    throw;
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
             // Justing printing an arbitary property to do something...
@@ -82,6 +118,9 @@ namespace HttpClientCertTest
                 Console.WriteLine(GetKortaumsoknWebClient(1)["UmNafn"]);
                 Console.Write("WebRequest: ");
                 Console.WriteLine(GetKortaumsoknWebRequest(1)["UmNafn"]);
+                Console.Write("Post: ");
+                string content = "{'UmKt': '0101302129', 'UmNetf': 'lorem@ipsum.is', 'Greidslumati': 1, 'UtibuId': 149, 'UtibuIdRb': 'A', 'Ath': 'Skilríki, já takk'}";
+                Console.WriteLine(PostKortaumsoknWebClient(content)["UmNafn"]);
             }
             catch (InvalidOperationException ex)
             {
