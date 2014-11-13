@@ -86,12 +86,7 @@ namespace HttpClientCertTest
                     ASCIIEncoding encoding = new ASCIIEncoding();
                     byte[] bytecontent = encoding.GetBytes(content);
                     var byteresponse = client.UploadData(API + uri, "POST", bytecontent);
-                    var charresponse = encoding.GetChars(byteresponse);
-                    string stringresponse = "";
-                    foreach (char ch in charresponse)
-                    {
-                        stringresponse += ch;
-                    }
+                    var stringresponse = encoding.GetString(byteresponse);
                     return JsonConvert.DeserializeObject<JObject>(stringresponse);
                 }
                 catch (WebException ex)
