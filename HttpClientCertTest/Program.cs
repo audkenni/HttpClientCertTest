@@ -91,11 +91,26 @@ namespace HttpClientCertTest
                 }
                 catch (WebException ex)
                 {
+                    string error = "";
                     if (ex.Status == WebExceptionStatus.ProtocolError)
                     {
-                        // http error from auðkenni api
-                        int statuscode = (int)((HttpWebResponse)ex.Response).StatusCode;
-                        throw new InvalidOperationException(String.Format("{0}", statuscode));
+                        if (ex.Response != null)
+                        {
+                            var responseStream = ex.Response.GetResponseStream();
+
+                            if (responseStream != null)
+                            {
+                                using (var reader = new StreamReader(responseStream))
+                                {
+                                    var stringresponse = reader.ReadToEnd();
+                                    var jsonresponse = JsonConvert.DeserializeObject<JObject>(stringresponse);
+                                    error = jsonresponse["error"].ToString();
+                                }
+                            }
+                            // http error from auðkenni api
+                            int statuscode = (int)((HttpWebResponse)ex.Response).StatusCode;
+                            throw new InvalidOperationException(String.Format("{0} {1}", statuscode, error));
+                        }
                     }
                     // lots of other possible WebExceptionStatus.
                     // choose what you want to handle: http://msdn.microsoft.com/en-us/library/system.net.webexceptionstatus(v=vs.110).aspx
@@ -114,7 +129,7 @@ namespace HttpClientCertTest
                 Console.Write("WebRequest: ");
                 Console.WriteLine(GetKortaumsoknWebRequest(1)["UmNafn"]);
                 Console.Write("Post: ");
-                string content = "{'UmKt': '0101302129', 'UmNetf': 'lorem@ipsum.is', 'Greidslumati': 1, 'UtibuId': 149, 'UtibuIdRb': 'A', 'Ath': 'Skilríki, já takk'}";
+                string content = "{'UmKt': '0101302129', 'UmNetf': 'lorem@ipsum.is', 'Greidslumati': 3, 'UtibuId': 149, 'UtibuIdRb': 'A', 'Ath': 'Skilríki, já takk'}";
                 Console.WriteLine(PostKortaumsoknWebClient(content)["UmNafn"]);
             }
             catch (InvalidOperationException ex)
